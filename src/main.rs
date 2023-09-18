@@ -6,24 +6,25 @@ mod hittable;
 mod interval;
 mod camera;
 mod random;
-mod material;
+mod materials;
 
 use std::sync::Arc;
 
 use crate::vec3::Vec3;
 use crate::sphere::Sphere;
 
+use materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal};
 
 fn main() {
 
     // World
     let mut world = hittable::HittableList{objects:Vec::new()};
 
-    let material_ground = material::Lambertian{albedo:Vec3(0.8,0.8,0.0)};
-    let material_center = material::Lambertian{albedo:Vec3(0.7,0.3,0.3)};
+    let material_ground = Lambertian{albedo:Vec3(0.8,0.8,0.0)};
+    let material_center = Lambertian{albedo:Vec3(0.7,0.3,0.3)};
     // let material_center = material::Dielectric::new(0.1);
-    let material_left = material::Dielectric::new(1.5);
-    let material_right = material::Metal::new(Vec3(0.8,0.6,0.2),1.0);
+    let material_left = Dielectric::new(1.5);
+    let material_right = Metal::new(Vec3(0.8,0.6,0.2),1.0);
 
 
     world.add(Arc::new(Sphere{center:Vec3(0.0,0.0,-1.0),radius:0.5,mat:Box::new(material_center),}));

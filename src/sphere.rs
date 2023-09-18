@@ -1,6 +1,6 @@
 use crate::hittable::Hittable;
 use crate::interval::Interval;
-use crate::material::Material;
+use crate::materials::material::Material;
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 
