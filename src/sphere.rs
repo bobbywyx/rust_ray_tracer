@@ -10,6 +10,12 @@ pub struct Sphere{
     pub mat:Box<dyn Material>,
 }
 
+impl Sphere {
+    pub fn new(center:Vec3,radius:f64,mat:Box<dyn Material>) -> Sphere {
+        Sphere{center:center,radius:radius,mat:mat}
+    }
+}
+
 pub fn hit_sphere(center:&Vec3,radius:f64,ray:&Ray) -> f64{
     let origin_to_center = ray.orig - *center;
     let a = ray.dir.dot(&ray.dir);

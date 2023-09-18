@@ -1,7 +1,6 @@
-use crate::{vec3::Vec3, hittable::HitRecord, ray::Ray};
+use crate::{vec3::Vec3, hittable::HitRecord, ray::Ray, random};
 use super::material::Material;
 
-use Vec3 as Color;
 
 pub struct Dielectric {
     pub ir:f64, // Index of Refraction
@@ -10,6 +9,13 @@ pub struct Dielectric {
 impl Dielectric {
     pub fn new(ir:f64) -> Dielectric {
         Dielectric{ir:ir}
+    }
+
+    fn  reflectance(cosine:f64,ref_idx:f64) -> f64 {
+        // Use Schlick's approximation for reflectance.
+        let mut r0 = (1.0-ref_idx) / (1.0+ref_idx);
+        r0 = r0*r0;
+        return r0 + (1.0-r0)*(1.0-cosine).powf(5.0);
     }
 }
 
@@ -30,12 +36,21 @@ impl Material for Dielectric {
         };
 
         let unit_dir = r_in.dir.unit_vector();
-        let refracted = Vec3::refract(&unit_dir, &hit_record.normal , refraction_ratio);
+        let cos_theta = (-unit_dir).dot(&hit_record.normal).min(1.0);
+        let sin_theta = (1.0 - cos_theta*cos_theta).sqrt();
 
-        // println!("refracted dot r_in dir  : {}",refracted.dot(&r_in.dir));
-
+        let cannot_refract = refraction_ratio * sin_theta > 1.0;
+        let direction= match cannot_refract || Dielectric::reflectance(cos_theta, refraction_ratio) > random::random_f64() {
+            true => {
+                unit_dir.reflect(&hit_record.normal)
+            }
+            false => {
+                Vec3::refract(&unit_dir,&hit_record.normal, refraction_ratio)
+            }
+        };
+        
         scattered.orig = hit_record.p;
-        scattered.dir = refracted;
+        scattered.dir = direction;
         return true;
     }
 }
