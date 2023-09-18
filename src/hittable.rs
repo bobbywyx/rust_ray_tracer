@@ -18,6 +18,7 @@ pub struct HitRecord{
 impl HitRecord {
     pub fn set_face_normal(&mut self,r:&Ray,outward_normal:&Vec3){
         self.front_face = r.dir().dot(outward_normal) < 0.0;
+        // println!("dot product {}",r.dir().dot(outward_normal));
         // print!("if front face {}\n",self.front_face);
         self.normal = match self.front_face {
             true => {

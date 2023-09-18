@@ -125,6 +125,8 @@ impl Camera {
 fn ray_color(ray:&Ray,depth:i32,world:&HittableList) -> Vec3{
     use Vec3 as Color;
 
+    // println!("  ray \n orig {:?} \n dir {:?} \n---------",ray.orig,ray.dir);
+
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if depth <= 0 {
         return Color(0.0,0.0,0.0);

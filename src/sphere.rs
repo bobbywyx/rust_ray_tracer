@@ -27,9 +27,10 @@ pub fn hit_sphere(center:&Vec3,radius:f64,ray:&Ray) -> f64{
 impl Hittable for Sphere {
     fn hit(&self,r: &Ray,ray_t:&Interval,rec:&mut crate::hittable::HitRecord) -> bool {
         let origin_to_center = r.orig - self.center;
-        let a = r.dir.dot(&r.dir);
+        let a = r.dir.length_squared();
         let half_b = origin_to_center.dot(&r.dir);
-        let c = origin_to_center.dot(&origin_to_center) - self.radius*self.radius;
+        let c = origin_to_center.length_squared() - self.radius*self.radius;
+        
         let discriminant = half_b*half_b - a*c;
     
         if discriminant<0.0 {
@@ -39,10 +40,10 @@ impl Hittable for Sphere {
         let sqrtd = discriminant.sqrt();
 
         // Find the nearest root that lies in the acceptable range.
-        let root = (-half_b - sqrtd) / a;
-        if (!ray_t.surrounds(root)){
-            let root = (-half_b + sqrtd) / a;
-            if (!ray_t.surrounds(root)){
+        let mut root = (-half_b - sqrtd) / a;
+        if !ray_t.surrounds(root){
+            root = (-half_b + sqrtd) / a;
+            if !ray_t.surrounds(root){
                 return false;
             }
         }

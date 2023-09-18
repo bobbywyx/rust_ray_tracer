@@ -100,6 +100,8 @@ impl Material for Dielectric {
         let unit_dir = r_in.dir.unit_vector();
         let refracted = Vec3::refract(&unit_dir, &hit_record.normal , refraction_ratio);
 
+        // println!("refracted dot r_in dir  : {}",refracted.dot(&r_in.dir));
+
         scattered.orig = hit_record.p;
         scattered.dir = refracted;
         return true;
