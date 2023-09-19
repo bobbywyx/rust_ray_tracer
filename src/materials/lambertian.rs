@@ -4,7 +4,6 @@ use super::material::Material;
 
 use Vec3 as Color;
 pub struct Lambertian{
-
     pub albedo:Color,
 }
 

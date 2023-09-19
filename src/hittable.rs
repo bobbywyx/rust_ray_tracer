@@ -57,6 +57,49 @@ impl HittableList {
     pub fn add(&mut self,object:Arc<dyn Hittable>){
         self.objects.push(object);
     }
+    pub fn random_scene(&mut self){
+        use crate::materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal, material::Material};
+        use crate::sphere::Sphere;
+        use crate::random::{random_f64_with_bounds,random_f64};
+        use Vec3 as Color;
+
+        let material_ground = Lambertian{albedo:Vec3(0.5,0.5,0.5)};
+        self.add(Arc::new(Sphere::new(Vec3(0.0,-1000.0,-1.0),1000.0,Box::new(material_ground))));
+    
+        let mut a = -11;
+        while a < 11 {
+            let mut b = -11;
+            while b < 11 {
+                let choose_mat = random_f64();    
+                let center = Point3::new(a as f64 + 0.9 * random_f64(), 0.2, b as f64 +0.9*random_f64());
+    
+                if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+                    let mut sphere_material: Box<dyn Material>;
+    
+                    if choose_mat < 0.8 {
+                        // diffuse
+                        let aldebo = Color::random() * Color::random();
+                        sphere_material = Box::new(Lambertian::new(aldebo));
+                        self.add(Arc::new(Sphere::new(center,0.2,sphere_material)));
+                    } else if choose_mat < 0.95 {
+                        // metal
+                        let aldebo = Color::random_with_bounds(0.5,1.0);
+                        let fuzz = random_f64_with_bounds(0.0,0.5);
+                        sphere_material = Box::new(Metal::new(aldebo,fuzz));
+                        self.add(Arc::new(Sphere::new(center,0.2,sphere_material)));
+                    } else {
+                        // glass
+                        sphere_material = Box::new(Dielectric::new(1.5));
+                        self.add(Arc::new(Sphere::new(center,0.2,sphere_material)));
+                    }
+                }
+                b+=1;
+            }
+            a+=1;
+        }
+
+
+    }
 }
 
 impl Hittable for HittableList {
