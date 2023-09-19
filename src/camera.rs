@@ -1,13 +1,14 @@
 use std::f64::INFINITY;
 
-use crate::hittable::{self, Hittable};
+use crate::hittable::{self, Hittable, HittableList};
 use crate::random::{random_f64, random_f64_with_bounds};
-use crate::{interval, random};
-use crate::{ray::Ray, hittable::HittableList, vec3::Vec3};
+use crate::types::interval;
+use crate::types::ray::Ray;
+use crate::types::vec3::Vec3;
 
-use crate::vec3::Vec3 as Point3;
+use crate::types::vec3::Vec3 as Point3;
 
-use crate::color::write_color;
+use crate::types::color::write_color;
 
 pub struct Camera{
     pub vfov:f64,

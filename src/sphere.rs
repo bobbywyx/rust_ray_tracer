@@ -1,8 +1,9 @@
 use crate::hittable::Hittable;
-use crate::interval::Interval;
 use crate::materials::material::Material;
-use crate::vec3::Vec3;
-use crate::ray::Ray;
+use crate::types::interval::Interval;
+use crate::types::ray::Ray;
+use crate::types::vec3::Vec3;
+
 
 pub struct Sphere{
     pub center:Vec3,

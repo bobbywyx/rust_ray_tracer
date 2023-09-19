@@ -1,4 +1,4 @@
-use crate::{vec3::Vec3 as color, interval::Interval};
+use super::{vec3::Vec3 as color, interval::Interval};
 
 
 pub fn write_color(pixel_color:color,sample_per_pixel:i32){

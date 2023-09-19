@@ -1,16 +1,13 @@
-mod color;
-mod vec3;
-mod ray;
+mod types;
 mod sphere;
-mod hittable;
-mod interval;
 mod camera;
 mod random;
 mod materials;
+mod hittable;
 
 use std::sync::Arc;
 
-use crate::vec3::Vec3;
+use crate::types::vec3::Vec3;
 use crate::sphere::Sphere;
 use crate::materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal};
 

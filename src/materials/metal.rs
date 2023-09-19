@@ -1,5 +1,5 @@
-use crate::{vec3::Vec3, hittable::HitRecord, ray::Ray};
 use super::material::Material;
+use crate::{types::{ray::Ray, vec3::Vec3}, hittable::HitRecord};
 
 use Vec3 as Color;
 

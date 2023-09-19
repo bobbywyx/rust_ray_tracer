@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use crate::interval::Interval;
-use crate::ray::Ray;
-use crate::vec3::Vec3;
 use crate::materials::material;
 use crate::materials::material::Material;
+use crate::types::interval::Interval;
+use crate::types::ray::Ray;
+use crate::types::vec3::Vec3;
 use Vec3 as Point3;
 
 // #[derive(Copy,Clone)]
