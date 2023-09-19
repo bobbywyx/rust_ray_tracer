@@ -3,9 +3,15 @@ use super::material::Material;
 
 
 use Vec3 as Color;
-
 pub struct Lambertian{
+
     pub albedo:Color,
+}
+
+impl Lambertian {
+    pub fn new(albedo:Color) -> Lambertian {
+        Lambertian{albedo:albedo}
+    }
 }
 
 impl Material for Lambertian {

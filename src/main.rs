@@ -16,7 +16,6 @@ use crate::sphere::Sphere;
 use materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal, material::Material};
 
 fn main() {
-
     // World
     let mut world = hittable::HittableList{objects:Vec::new()};
 
@@ -34,13 +33,22 @@ fn main() {
     world.add(Arc::new(Sphere::new(Vec3(1.0,0.0,-1.0),0.5,Box::new(material_right))));
     
 
+    // let R = (std::f64::consts::PI / 4.0).cos();
+    // let material_left = Lambertian::new(Vec3(0.0,0.0,1.0));
+    // let material_right = Lambertian::new(Vec3(1.0,0.0,0.0));
+
+    // world.add(Arc::new(Sphere::new(Vec3(-R,0.0,-1.0),R,Box::new(material_left))));
+    // world.add(Arc::new(Sphere::new(Vec3(R,0.0,-1.0),R,Box::new(material_right))));  
+
+
+    let lookfrom = Vec3(3.0,3.0,2.0);
+    let lookat = Vec3(0.0,0.0,-1.0);
+    let vup = Vec3(0.0,1.0,0.0);
+    let dist_to_focus = (lookfrom-lookat).length();
+    let aperture = 2.0;
+
     // Camera
-    let mut camera = camera::Camera::new(16.0/9.0,400,50,50);
+    let mut camera = camera::Camera::new(20.0,16.0/9.0,400,50,50,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
 
     camera.render(&world);
-}
-
-
-fn degrees_to_radians(degrees:f64) -> f64{
-    degrees * std::f64::consts::PI / 180.0
 }

@@ -1,6 +1,7 @@
 use std::f64::INFINITY;
 
 use crate::hittable::{self, Hittable};
+use crate::random::{random_f64, random_f64_with_bounds};
 use crate::{interval, random};
 use crate::{ray::Ray, hittable::HittableList, vec3::Vec3};
 
@@ -9,35 +10,46 @@ use crate::vec3::Vec3 as Point3;
 use crate::color::write_color;
 
 pub struct Camera{
+    pub vfov:f64,
     pub aspect_ratio:f64,
     pub image_width:i32,
     pub samples_per_pixel:i32,
     pub max_depth:i32,
     image_height:i32,
     center:Point3,
-    pixel00_loc:Point3,
-    pixel_delta_u:Vec3,
-    pixel_delta_v:Vec3,
+    lower_left_corner:Point3,
+    horizontal:Vec3,
+    vertical:Vec3,
+    u:Vec3,
+    v:Vec3,
+    w:Vec3,
+    lens_radius:f64,
 }
 
 impl Camera {
-
-    pub fn new(aspect_ratio:f64,image_width:i32,samples_per_pixel:i32,max_depth:i32) -> Camera{
-        Camera{
+    pub fn new(vfov:f64,aspect_ratio:f64,image_width:i32,samples_per_pixel:i32,max_depth:i32,lookfrom:&Vec3,lookat:&Vec3,vup:&Vec3,aperture:f64,focus_dist:f64) -> Camera{
+        let mut camera = Camera{
+            vfov,
             aspect_ratio,
             image_width,
             samples_per_pixel,
             max_depth,
             image_height:0,
             center:Point3(0.0,0.0,0.0),
-            pixel00_loc:Point3(0.0,0.0,0.0),
-            pixel_delta_u:Vec3(0.0,0.0,0.0),
-            pixel_delta_v:Vec3(0.0,0.0,0.0),
-        }
+            lower_left_corner:Point3(0.0,0.0,0.0),
+            horizontal:Vec3(0.0,0.0,0.0),
+            vertical:Vec3(0.0,0.0,0.0),
+            u:Vec3(0.0,0.0,0.0),
+            v:Vec3(0.0,0.0,0.0),
+            w:Vec3(0.0,0.0,0.0),
+            lens_radius:0.0
+        };
+        camera.init(lookfrom,lookat,vup,aperture,focus_dist);
+        return camera;
     }
 
     pub fn render(&mut self,world:&HittableList){
-        self.init();
+        
         print!("P3\n{} {}\n255\n",self.image_width,self.image_height);
 
         let mut j = 0;
@@ -48,15 +60,9 @@ impl Camera {
                 let mut pixel_color = Color(0.0,0.0,0.0);
                 
                 for _ in 0..self.samples_per_pixel{
-                    let ray = self.get_ray(i, j);
+                    let ray = self.get_ray(i as f64 / self.image_width as f64, (self.image_height -  j) as f64 / self.image_height as f64);
                     pixel_color = pixel_color + ray_color(&ray,self.max_depth,&world);
                 }
-
-                // let pixel_center = self.pixel00_loc + (self.pixel_delta_u * i as f64) + (self.pixel_delta_v * j as f64);
-                // let ray_direction = pixel_center - self.center;
-                // let r = Ray{orig: self.center, dir: ray_direction};
-
-                // let pixel_color = ray_color(&r,&world);
 
                 write_color(pixel_color,self.samples_per_pixel);
 
@@ -67,65 +73,48 @@ impl Camera {
 
     }
 
-    fn init(&mut self){    
+    fn init(&mut self,lookfrom:&Vec3,lookat:&Vec3,vup:&Vec3,aperture:f64,focus_dist:f64){    
         self.image_height = (self.image_width as f64 / self.aspect_ratio) as i32;
         
         if self.image_height == 0 {
             self.image_height = 1;
         }
 
-        self.center = Point3(0.0, 0.0, 0.0);
+        let theta = degrees_to_radians(self.vfov);
+        let h = (theta/2.0).tan();
 
         // Determine viewport dimensions.
-        let focal_length = 1.0;
-        let viewport_height = 2.0;
-        let viewport_width = viewport_height as f64 * ((self.image_width as f64 )/self.image_height as f64);
+        let viewport_height = 2.0 * h;
+        let viewport_width = self.aspect_ratio * viewport_height;
 
-        // Calculate the vectors across the horizontal and down the vertical viewport edges.
-        let viewport_u = Vec3(viewport_width, 0.0, 0.0);
-        let viewport_v = Vec3(0.0, -viewport_height, 0.0);
+        self.w = (*lookfrom - *lookat).unit_vector();
+        self.u = vup.cross(&self.w).unit_vector();
+        self.v = self.w.cross(&self.u);
 
+        self.center = lookfrom.clone();
+        self.horizontal = focus_dist * viewport_width * self.u;
+        self.vertical = focus_dist * viewport_height * self.v;
+        self.lower_left_corner = self.center - self.horizontal/2.0 - self.vertical/2.0 - focus_dist * self.w;
+        
+        self.lens_radius = aperture / 2.0;
 
-        // Calculate the horizontal and vertical delta vectors from pixel to pixel.
-        self.pixel_delta_u = viewport_u / self.image_width as f64;
-        self.pixel_delta_v = viewport_v / self.image_height as f64;
-
-
-        // Calculate the location of the upper left pixel.
-        let viewport_upper_left = self.center
-            - Vec3(0.0, 0.0, focal_length) - viewport_u/2.0 - viewport_v/2.0;
-
-        self.pixel00_loc = viewport_upper_left +  (self.pixel_delta_u + self.pixel_delta_v) * 0.5;
+        // println!("lower left corner {:?}",self.lower_left_corner);
+        // println!("up right corner {:?}",self.lower_left_corner + self.horizontal + self.vertical);
 
     }
 
-    fn pixel_center_square(&self) -> Vec3{
-        // Returns a random point in the square surrounding a pixel at the origin.
-        let px = -0.5 + random::random_f64();
-        let py = -0.5 + random::random_f64();
 
-        // print!("{} {}\n",px,py);
-
-        return (self.pixel_delta_u * px) + (self.pixel_delta_v * py);
-    }
-
-    fn get_ray(&self,u:i32,v:i32) -> Ray{
-        // Get a randomly sampled camera ray for the pixel at location i,j.
-        let pixel_center = self.pixel00_loc + (self.pixel_delta_u * u as f64) + (self.pixel_delta_v * v as f64);
-        let pixel_sample  = pixel_center + self.pixel_center_square();
-
-        let ray_origin = self.center;
-        let ray_dir = pixel_sample - ray_origin;
-
-        return Ray{orig:ray_origin,dir:ray_dir};
+    fn get_ray(&self,s:f64,t:f64) -> Ray{
+        let rd = self.lens_radius * random_in_unit_disk();
+        let offset = self.u * rd.x() + self.v * rd.y();
+        return Ray{orig:self.center + offset,
+                    dir:self.lower_left_corner + s * self.horizontal + t *self.vertical - self.center - offset};
     }
 
 }
 
 fn ray_color(ray:&Ray,depth:i32,world:&HittableList) -> Vec3{
     use Vec3 as Color;
-
-    // println!("  ray \n orig {:?} \n dir {:?} \n---------",ray.orig,ray.dir);
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if depth <= 0 {
@@ -156,4 +145,16 @@ fn ray_color(ray:&Ray,depth:i32,world:&HittableList) -> Vec3{
     let unit_direction = ray.dir.unit_vector();
     let a = 0.5*(unit_direction.y() + 1.0);
     Color(1.0, 1.0, 1.0) * (1.0-a) + Color(0.5, 0.7, 1.0) * a
+}
+
+fn degrees_to_radians(degrees:f64) -> f64{
+    degrees * std::f64::consts::PI / 180.0
+}
+
+fn random_in_unit_disk() -> Vec3 {
+    loop {
+        let p = Vec3::new(random_f64_with_bounds(-1.0,1.0),random_f64_with_bounds(-1.0, 1.0),0.0);
+        if p.length_squared() >=1.0 {continue;}
+        return p;
+    }
 }
