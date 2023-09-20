@@ -9,6 +9,7 @@ use crate::types::vec3::Vec3;
 use crate::types::vec3::Vec3 as Point3;
 
 use crate::types::color::write_color;
+use crate::types::image::Image;
 
 pub struct Camera{
     pub vfov:f64,
@@ -49,11 +50,9 @@ impl Camera {
         return camera;
     }
 
-    pub fn render(&self,world:&HittableList){
-        
-        print!("P3\n{} {}\n255\n",self.image_width,self.image_height);
-
+    pub fn render(&self,world:&HittableList) -> Box<Image>{
         let mut j = 0;
+        let mut image = Image::new(self.image_width,self.image_height);
         while j<self.image_height {
             let mut i = 0;
             while i<self.image_width {
@@ -64,14 +63,14 @@ impl Camera {
                     let ray = self.get_ray(i as f64 / self.image_width as f64, (self.image_height -  j) as f64 / self.image_height as f64);
                     pixel_color = pixel_color + ray_color(&ray,self.max_depth,&world);
                 }
-
-                write_color(pixel_color,self.samples_per_pixel);
+                image.set_pixel(i,j,pixel_color);
+                // write_color(pixel_color,self.samples_per_pixel);
 
                 i+=1;
             }
             j += 1;
         }
-
+        image
     }
 
     fn init(&mut self,lookfrom:&Vec3,lookat:&Vec3,vup:&Vec3,aperture:f64,focus_dist:f64){    
