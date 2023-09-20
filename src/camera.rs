@@ -16,7 +16,7 @@ pub struct Camera{
     pub image_width:i32,
     pub samples_per_pixel:i32,
     pub max_depth:i32,
-    image_height:i32,
+    pub image_height:i32,
     center:Point3,
     lower_left_corner:Point3,
     horizontal:Vec3,
@@ -49,7 +49,7 @@ impl Camera {
         return camera;
     }
 
-    pub fn render(&mut self,world:&HittableList){
+    pub fn render(&self,world:&HittableList){
         
         print!("P3\n{} {}\n255\n",self.image_width,self.image_height);
 

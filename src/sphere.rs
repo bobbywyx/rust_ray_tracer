@@ -8,11 +8,11 @@ use crate::types::vec3::Vec3;
 pub struct Sphere{
     pub center:Vec3,
     pub radius:f64,
-    pub mat:Box<dyn Material>,
+    pub mat:Box<dyn Material+ Sync+Send>,
 }
 
 impl Sphere {
-    pub fn new(center:Vec3,radius:f64,mat:Box<dyn Material>) -> Sphere {
+    pub fn new(center:Vec3,radius:f64,mat:Box<dyn Material+Sync+Send>) -> Sphere {
         Sphere{center:center,radius:radius,mat:mat}
     }
 }

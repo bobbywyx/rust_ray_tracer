@@ -20,7 +20,7 @@ impl Dielectric {
 }
 
 impl Material for Dielectric {
-    fn my_copy(&self) -> Box<dyn Material> {
+    fn my_copy(&self) -> Box<dyn Material+Sync+Send> {
         Box::new(Dielectric{ir:self.ir})
     }
 

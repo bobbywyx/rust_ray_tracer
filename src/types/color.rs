@@ -1,5 +1,11 @@
 use super::{vec3::Vec3 as color, interval::Interval};
 
+pub struct RGB{
+    pub r:u8,
+    pub g:u8,
+    pub b:u8,
+}
+
 
 pub fn write_color(pixel_color:color,sample_per_pixel:i32){
     let mut r = pixel_color.0;

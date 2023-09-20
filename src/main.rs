@@ -4,12 +4,15 @@ mod camera;
 mod random;
 mod materials;
 mod hittable;
+mod renderer;
 
+use std::rc::Rc;
 use std::sync::Arc;
 
 use crate::types::vec3::Vec3;
 use crate::sphere::Sphere;
 use crate::materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal};
+use crate::renderer::Renderer;
 
 
 fn main() {
@@ -35,8 +38,12 @@ fn main() {
     let aperture = 0.1;
 
     // Camera
-    let mut camera = camera::Camera::new(20.0,16.0/9.0,700,10,20,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
+    let mut camera = camera::Camera::new(20.0,16.0/9.0,200,10,20,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
 
-    camera.render(&world);
+    // camera.render(&world);
+
+    let mut renderer = Renderer::new(1, Arc::new(world), Arc::new(camera));
+    renderer.render();
+
 }
 

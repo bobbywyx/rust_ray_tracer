@@ -11,7 +11,7 @@ use Vec3 as Point3;
 pub struct HitRecord{
     pub p:Point3,
     pub normal:Vec3,
-    pub mat: Box<dyn Material>,
+    pub mat: Box<dyn Material + Sync+Send>,
     pub t:f64,
     pub front_face : bool,
 }
@@ -47,14 +47,14 @@ pub trait Hittable {
 
 
 pub struct HittableList{
-    pub objects: Vec<Arc<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable+Sync+Send>>,
 }
 
 impl HittableList {
     pub fn clear(&mut self){
         self.objects.clear();
     }
-    pub fn add(&mut self,object:Arc<dyn Hittable>){
+    pub fn add(&mut self,object:Arc<dyn Hittable+Sync+Send>){
         self.objects.push(object);
     }
     pub fn random_scene(&mut self){
@@ -74,7 +74,7 @@ impl HittableList {
                 let center = Point3::new(a as f64 + 0.9 * random_f64(), 0.2, b as f64 +0.9*random_f64());
     
                 if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                    let mut sphere_material: Box<dyn Material>;
+                    let mut sphere_material: Box<dyn Material+Sync+Send>;
     
                     if choose_mat < 0.8 {
                         // diffuse

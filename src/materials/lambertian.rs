@@ -26,7 +26,7 @@ impl Material for Lambertian {
         attenuation.clone_from(&self.albedo);
         return true;
     }
-    fn my_copy(&self) -> Box<dyn Material> {
+    fn my_copy(&self) -> Box<dyn Material+Sync+Send> {
         Box::new(Lambertian{albedo:self.albedo})
     }
 }

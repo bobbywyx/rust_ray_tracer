@@ -19,7 +19,7 @@ impl Metal {
 }
 
 impl Material for Metal {
-    fn my_copy(&self) -> Box<dyn Material> {
+    fn my_copy(&self) -> Box<dyn Material+Sync+Send> {
         Box::new(Metal{albedo:self.albedo,fuzz:self.fuzz})
     }
     fn scatter(&self,r_in:&Ray,hit_record:&HitRecord,attenuation:&mut Vec3,scattered:&mut Ray) -> bool {
