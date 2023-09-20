@@ -38,11 +38,11 @@ fn main() {
     let aperture = 0.1;
 
     // Camera
-    let mut camera = camera::Camera::new(20.0,16.0/9.0,400,10,20,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
+    let mut camera = camera::Camera::new(20.0,16.0/9.0,1920,75,75,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
 
     // camera.render(&world);
 
-    let mut renderer = Renderer::new(2, Arc::new(world), Arc::new(camera));
+    let mut renderer = Renderer::new(8, Arc::new(world), Arc::new(camera));
     renderer.render();
 
 }

@@ -29,33 +29,37 @@ impl Renderer {
     pub fn render(&mut self){
         let (tx, rx) = std::sync::mpsc::channel();
 
+        let samples_per_thread = self.camera.samples_per_pixel/self.threads;
+        let last_thread_samples = self.camera.samples_per_pixel - samples_per_thread*(self.threads-1);
+
+        // create threads
+        for i in 0..self.threads-1 {
+            let tx = tx.clone();
+            let camera = Arc::clone(&self.camera);
+            let world = Arc::clone(&self.world);
+            thread::spawn(move  || {
+                eprintln!("thread {} start render",i);
+                let sub_image = camera.render(world.deref(),samples_per_thread);
+                eprintln!("thread {} end render", i);
+                tx.send(sub_image).unwrap();
+            });
+        }
+        let tx = tx.clone();
         let camera = Arc::clone(&self.camera);
         let world = Arc::clone(&self.world);
-
-        // 创建线程，并发送消息
+        let thread_num = self.threads;
         thread::spawn(move  || {
-            // 发送一个数字1, send方法返回Result<T,E>，通过unwrap进行快速错误处理
-            // let mut sub_image1 =Box::new(Image::new(camera.image_width, camera.image_height));
-            // let world_obj_nums = world.objects.iter().count();
-            // sub_image1.set_pixel(camera.image_width-1,0,Vec3::new(1.2,3.4,world_obj_nums as f64));
-
-            eprint!("thread start render");
-            let sub_image2 = camera.render(world.deref());
-            eprint!("thread end render");
-
-            tx.send(sub_image2).unwrap();
-
-            // 下面代码将报错，因为编译器自动推导出通道传递的值是i32类型，那么Option<i32>类型将产生不匹配错误
-            // tx.send(Some(1)).unwrap()
+            eprintln!("thread {} start render",thread_num-1);
+            let sub_image = camera.render(world.deref(),last_thread_samples);
+            eprintln!("thread {} end render", thread_num-1);
+            tx.send(sub_image).unwrap();
         });
 
-        // eprintln!("pixel from thread1:{}",rx.recv().unwrap().pixels[0][self.camera.image_width as usize -1].2);
-        self.sub_images.push(rx.recv().unwrap());
 
-        eprintln!("pixel from thread1:{}",self.sub_images[0].pixels[0][self.camera.image_width as usize -1].2);
-
-
-        self.image.add_image(&self.sub_images[0]);
+        for i in 0..self.threads {
+            self.sub_images.push(rx.recv().unwrap());
+            self.image.add_image(&self.sub_images[i as usize]);
+        }
 
         self.output_image();
     }

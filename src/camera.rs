@@ -50,7 +50,7 @@ impl Camera {
         return camera;
     }
 
-    pub fn render(&self,world:&HittableList) -> Box<Image>{
+    pub fn render(&self,world:&HittableList,sample_num:i32) -> Box<Image>{
         let mut j = 0;
         let mut image = Image::new(self.image_width,self.image_height);
         while j<self.image_height {
@@ -59,7 +59,7 @@ impl Camera {
                 use Vec3 as Color;
                 let mut pixel_color = Color(0.0,0.0,0.0);
                 
-                for _ in 0..self.samples_per_pixel{
+                for _ in 0..sample_num{
                     let ray = self.get_ray(i as f64 / self.image_width as f64, (self.image_height -  j) as f64 / self.image_height as f64);
                     pixel_color = pixel_color + ray_color(&ray,self.max_depth,&world);
                 }
