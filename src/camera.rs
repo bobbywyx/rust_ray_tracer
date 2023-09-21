@@ -4,6 +4,7 @@ use crate::hittable::{self, Hittable, HittableList};
 use crate::random::{random_f64, random_f64_with_bounds};
 use crate::types::interval;
 use crate::types::ray::Ray;
+use crate::types::render_task::RenderTask;
 use crate::types::vec3::Vec3;
 
 use crate::types::vec3::Vec3 as Point3;
@@ -50,12 +51,16 @@ impl Camera {
         return camera;
     }
 
-    pub fn render(&self,world:&HittableList,sample_num:i32) -> Box<Image>{
+    pub fn render(&self,world:&HittableList,task:RenderTask) -> Box<Image>{
         let mut j = 0;
         let mut image = Image::new(self.image_width,self.image_height);
+        let sample_num = task.samples_per_pixel;
+
         while j<self.image_height {
             let mut i = 0;
-            while i<self.image_width {
+            // while i<self.image_width && j*self.image_width+i < task.end_id && task.start_id <= j*self.image_width+i {
+            loop{
+                if task.start_id <= j*self.image_width+i {
                 use Vec3 as Color;
                 let mut pixel_color = Color(0.0,0.0,0.0);
                 
@@ -65,8 +70,14 @@ impl Camera {
                 }
                 image.set_pixel(i,j,pixel_color);
                 // write_color(pixel_color,self.samples_per_pixel);
-
+                }
                 i+=1;
+                if i>=self.image_width || j*self.image_width+i >= task.end_id{
+                    break;
+                }
+            }
+            if j*self.image_width >= task.end_id {
+                break;
             }
             j += 1;
         }
