@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::ops::AddAssign;
 use crate::types::color::write_color;
 use crate::types::vec3::Vec3;
@@ -37,10 +38,10 @@ impl Image {
         self
     }
 
-    pub fn write(&self,samples_per_pixel:i32){
+    pub fn write(&self,samples_per_pixel:i32,f:&File){
         for y in 0..self.height {
             for x in 0..self.width {
-                write_color(self.pixels[y as usize][x as usize],samples_per_pixel);
+                write_color(self.pixels[y as usize][x as usize],samples_per_pixel,f);
             }
         }
     }

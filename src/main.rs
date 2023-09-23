@@ -5,8 +5,10 @@ mod random;
 mod materials;
 mod hittable;
 mod renderer;
+mod file_io;
 
 use std::sync::Arc;
+use crate::file_io::create_file;
 
 use crate::types::vec3::Vec3;
 use crate::sphere::Sphere;
@@ -41,8 +43,7 @@ fn main() {
 
     // camera.render(&world);
 
-    let mut renderer = Renderer::new(8, Arc::new(world), Arc::new(camera));
+    let mut renderer = Renderer::new(8, Arc::new(world), Arc::new(camera),create_file());
     renderer.render();
-
 }
 

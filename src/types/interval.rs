@@ -1,5 +1,3 @@
-use std::f64::INFINITY;
-
 pub struct Interval{
     pub min: f64,
     pub max: f64,
@@ -15,15 +13,15 @@ impl Interval {
 
     pub fn empty() -> Interval{
         Interval{
-            min:INFINITY,
-            max:-INFINITY,
+            min:f64::INFINITY,
+            max:-f64::INFINITY,
         }
     }
 
     pub fn universe() -> Interval{
         Interval{
-            min:-INFINITY,
-            max:INFINITY,
+            min:-f64::INFINITY,
+            max:f64::INFINITY,
         }
     }
 

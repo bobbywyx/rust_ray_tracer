@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::Write;
 use std::sync::mpsc::Sender;
 use std::sync::Arc;
 use std::ops::Deref;
@@ -16,10 +18,11 @@ pub struct Renderer{
     image:Box<Image>,
     sub_images:Vec<Box<Image>>,
     current_task_id:i32,
+    file:File
 }
 
 impl Renderer {
-    pub fn new(threads:i32,world:Arc<HittableList>,camera:Arc<crate::camera::Camera>) -> Renderer{
+    pub fn new(threads:i32,world:Arc<HittableList>,camera:Arc<crate::camera::Camera>,f:File) -> Renderer{
         Renderer{
             threads,
             world,
@@ -27,6 +30,7 @@ impl Renderer {
             camera,
             sub_images:Vec::with_capacity(threads as usize),
             current_task_id:0,
+            file:f
         }
     }
 
@@ -92,9 +96,10 @@ impl Renderer {
 
         self.output_image();
     }
-    fn output_image(&self){
-        print!("P3\n{} {}\n255\n",self.camera.image_width,self.camera.image_height);
-        self.image.write(self.camera.samples_per_pixel);
+    fn output_image(&mut self){
+        // print!("P3\n{} {}\n255\n",self.camera.image_width,self.camera.image_height);
+        self.file.write_fmt(format_args!("P3\n{} {}\n255\n",self.camera.image_width,self.camera.image_height)).unwrap();
+        self.image.write(self.camera.samples_per_pixel,&self.file);
     }
 
     fn create_one_thread(&mut self,tx:Sender<Box<Image>>,task:RenderTask,id:i32){
@@ -103,10 +108,10 @@ impl Renderer {
         let world = Arc::clone(&self.world);
 
         thread::spawn(move  || {
-            eprintln!("thread {} start render",id);
-            eprintln!("task pixels :{} and samples :{}",task.end_id - task.start_id,task.samples_per_pixel);
+            println!("thread {} start render",id);
+            println!("task pixels :{} and samples :{}",task.end_id - task.start_id,task.samples_per_pixel);
             let sub_image = camera.render(world.deref(),task);
-            eprintln!("thread {} end render", id);
+            println!("thread {} end render", id);
             tx.send(sub_image).unwrap();
         });
     }

@@ -1,7 +1,10 @@
+use std::fs::File;
+use std::io::Write;
+use crate::types::vec3::Vec3;
 use super::{vec3::Vec3 as color, interval::Interval};
 
 
-pub fn write_color(pixel_color:color,sample_per_pixel:i32){
+pub fn write_color(pixel_color:color, sample_per_pixel:i32, mut f: &File){
     let mut r = pixel_color.0;
     let mut g = pixel_color.1;
     let mut b = pixel_color.2;
@@ -21,7 +24,8 @@ pub fn write_color(pixel_color:color,sample_per_pixel:i32){
     let ir = (256.0 * intensity.clamp(r)) as i32;
     let ig = (256.0 * intensity.clamp(g)) as i32;
     let ib = (256.0 * intensity.clamp(b)) as i32;
-    print!("{} {} {}\n",ir,ig,ib);
+    // print!("{} {} {}\n",ir,ig,ib);
+    f.write_fmt(format_args!("{} {} {}\n",ir,ig,ib)).unwrap();
 }
 
 fn linear_to_gamma(linear_comp:f64) -> f64{
