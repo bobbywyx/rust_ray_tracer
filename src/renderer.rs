@@ -1,12 +1,11 @@
 use std::sync::mpsc::Sender;
-use std::{sync::Arc, ops::AddAssign};
+use std::sync::Arc;
 use std::ops::Deref;
-use std::rc::Rc;
 use std::thread;
 use crate::types::image::Image;
 
 use crate::types::render_task::RenderTask;
-use crate::{hittable::HittableList, types::{color::RGB, vec3::Vec3}};
+use crate::hittable::HittableList;
 
 
 

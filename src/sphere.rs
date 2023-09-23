@@ -17,20 +17,6 @@ impl Sphere {
     }
 }
 
-pub fn hit_sphere(center:&Vec3,radius:f64,ray:&Ray) -> f64{
-    let origin_to_center = ray.orig - *center;
-    let a = ray.dir.dot(&ray.dir);
-    let half_b = origin_to_center.dot(&ray.dir);
-    let c = origin_to_center.dot(&origin_to_center) - radius*radius;
-    let discriminant = half_b*half_b - a*c;
-
-    if discriminant<0.0 {
-        return -1.0;
-    }else {
-        return (-half_b - discriminant.sqrt()) / a;
-    }
-}
-
 impl Hittable for Sphere {
     fn hit(&self,r: &Ray,ray_t:&Interval,rec:&mut crate::hittable::HitRecord) -> bool {
         let origin_to_center = r.orig - self.center;

@@ -1,7 +1,5 @@
-use std::f64::INFINITY;
-
 use crate::hittable::{self, Hittable, HittableList};
-use crate::random::{random_f64, random_f64_with_bounds};
+use crate::random::random_f64_with_bounds;
 use crate::types::interval;
 use crate::types::ray::Ray;
 use crate::types::render_task::RenderTask;
@@ -9,7 +7,6 @@ use crate::types::vec3::Vec3;
 
 use crate::types::vec3::Vec3 as Point3;
 
-use crate::types::color::write_color;
 use crate::types::image::Image;
 
 pub struct Camera{
@@ -133,7 +130,7 @@ fn ray_color(ray:&Ray,depth:i32,world:&HittableList) -> Vec3{
     }
 
     let mut rec = hittable::HitRecord::new();
-    if(world.hit(ray, &interval::Interval { min: 0.001, max: INFINITY }, &mut rec)){
+    if world.hit(ray, &interval::Interval { min: 0.001, max: f64::INFINITY }, &mut rec) {
         let mut scattered:Ray = Ray::new(Vec3::zero_vec3(), Vec3::zero_vec3());
         let mut attenuation:Color = Color(0.0,0.0,0.0);
 

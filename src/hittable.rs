@@ -58,7 +58,7 @@ impl HittableList {
         self.objects.push(object);
     }
     pub fn random_scene(&mut self){
-        use crate::materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal, material::Material};
+        use crate::materials::{lambertian::Lambertian,dielectric::Dielectric,metal::Metal};
         use crate::sphere::Sphere;
         use crate::random::{random_f64_with_bounds,random_f64};
         use Vec3 as Color;
@@ -74,7 +74,7 @@ impl HittableList {
                 let center = Point3::new(a as f64 + 0.9 * random_f64(), 0.2, b as f64 +0.9*random_f64());
     
                 if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                    let mut sphere_material: Box<dyn Material+Sync+Send>;
+                    let sphere_material: Box<dyn Material+Sync+Send>;
     
                     if choose_mat < 0.8 {
                         // diffuse
@@ -108,7 +108,7 @@ impl Hittable for HittableList {
         let mut closest_so_far = ray_t.max;
         for object in self.objects.iter() {
             let mut temp_rec = HitRecord::new();
-            if(object.hit(r, &Interval{min:ray_t.min,max:closest_so_far}, &mut temp_rec)){
+            if object.hit(r, &Interval{min:ray_t.min,max:closest_so_far}, &mut temp_rec) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec;

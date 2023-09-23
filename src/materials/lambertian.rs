@@ -14,7 +14,7 @@ impl Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self,r_in:&Ray,hit_record:&HitRecord,attenuation:&mut Vec3,scattered:&mut Ray) -> bool {
+    fn scatter(&self,_:&Ray,hit_record:&HitRecord,attenuation:&mut Vec3,scattered:&mut Ray) -> bool {
         let mut scatter_direction = hit_record.normal + Vec3::random_unit_vector();
 
         if scatter_direction.near_zero() {

@@ -1,8 +1,3 @@
-use std::{sync::Arc, ops::Deref};
-
-use crate::{hittable::HittableList, camera::Camera};
-
-
 #[derive(Clone,Copy)]
 pub struct RenderTask{
     pub start_id:i32,
