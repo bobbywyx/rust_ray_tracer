@@ -39,7 +39,7 @@ fn main() {
     let aperture = 0.1;
 
     // Camera
-    let camera = camera::Camera::new(20.0,16.0/9.0,1920,75,75,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
+    let camera = camera::Camera::new(20.0,16.0/9.0,400,20,50,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
 
     // camera.render(&world);
 
