@@ -89,7 +89,7 @@ impl Renderer {
 
             if self.current_task_id < task_nums {
                 // 只剩下最后几个任务了，不需要再创建线程了
-                self.create_one_thread(tx.clone(),task_queue[self.current_task_id as usize],i/self.threads);
+                self.create_one_thread(tx.clone(),task_queue[self.current_task_id as usize],i%self.threads);
             }
             self.image.add_image(&self.sub_images[i as usize]);
         }
