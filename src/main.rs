@@ -41,9 +41,8 @@ fn main() {
     // Camera
     let camera = camera::Camera::new(20.0,16.0/9.0,400,20,50,&lookfrom,&lookat,&vup,aperture,dist_to_focus);
 
-    // camera.render(&world);
-
-    let mut renderer = Renderer::new(8, Arc::new(world), Arc::new(camera),create_file());
+    let mut renderer = Renderer::new(20, Arc::new(world), Arc::new(camera),create_file("out2".to_string()));
     renderer.render();
+    renderer.output_image();
 }
 

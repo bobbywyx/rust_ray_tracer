@@ -93,11 +93,8 @@ impl Renderer {
             }
             self.image.add_image(&self.sub_images[i as usize]);
         }
-
-        self.output_image();
     }
-    fn output_image(&mut self){
-        // print!("P3\n{} {}\n255\n",self.camera.image_width,self.camera.image_height);
+    pub fn output_image(&mut self){
         self.file.write_fmt(format_args!("P3\n{} {}\n255\n",self.camera.image_width,self.camera.image_height)).unwrap();
         self.image.write(self.camera.samples_per_pixel,&self.file);
     }
