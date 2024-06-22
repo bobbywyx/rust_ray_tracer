@@ -1,6 +1,5 @@
 extern crate rand;
 
-
 pub(crate) fn random_f64() -> f64 {
     // Returns a random real in [0,1).
     rand::random::<f64>()
