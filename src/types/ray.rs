@@ -17,6 +17,14 @@ impl Ray {
         }
     }
 
+    pub fn new_with_tm(origin: Point3, direction: Vec3, tm: f64) -> Ray {
+        Ray {
+            orig: origin,
+            dir: direction,
+            tm,
+        }
+    }
+
     pub fn origin(&self) -> Point3 {
         self.orig
     }

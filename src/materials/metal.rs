@@ -38,11 +38,13 @@ impl Material for Metal {
         attenuation: &mut Vec3,
         scattered: &mut Ray,
     ) -> bool {
+        // reflect the light like a mirror
         let reflected = r_in.dir().unit_vector().reflect(&hit_record.normal);
 
-        *scattered = Ray::new(
+        *scattered = Ray::new_with_tm(
             hit_record.p,
             reflected + self.fuzz * Vec3::random_in_unit_sphere(),
+            r_in.time(),
         );
 
         attenuation.clone_from(&self.albedo);

@@ -51,7 +51,7 @@ impl Material for Dielectric {
             true => unit_dir.reflect(&hit_record.normal),
             false => Vec3::refract(&unit_dir, &hit_record.normal, refraction_ratio),
         };
-        *scattered = Ray::new(hit_record.p, direction);
+        *scattered = Ray::new_with_tm(hit_record.p, direction, r_in.time());
         return true;
     }
 }

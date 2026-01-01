@@ -1,5 +1,5 @@
 use crate::hittable::{self, Hittable, HittableList};
-use crate::random::random_f64_with_bounds;
+use crate::random::{random_f64, random_f64_with_bounds};
 use crate::types::interval;
 use crate::types::ray::Ray;
 use crate::types::render_task::RenderTask;
@@ -128,9 +128,11 @@ impl Camera {
     fn get_ray(&self, s: f64, t: f64) -> Ray {
         let rd = self.lens_radius * random_in_unit_disk();
         let offset = self.u * rd.x() + self.v * rd.y();
-        return Ray::new(
+        let ray_time = random_f64();
+        return Ray::new_with_tm(
             self.center + offset,
             self.lower_left_corner + s * self.horizontal + t * self.vertical - self.center - offset,
+            ray_time,
         );
     }
 }
