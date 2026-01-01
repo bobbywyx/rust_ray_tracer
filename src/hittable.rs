@@ -85,7 +85,14 @@ impl HittableList {
                         // diffuse
                         let aldebo = Color::random() * Color::random();
                         sphere_material = Box::new(Lambertian::new(aldebo));
-                        self.add(Arc::new(Sphere::new(center, 0.2, sphere_material)));
+                        let center2 = center + Vec3::new(0., random_f64_with_bounds(0., 0.5), 0.);
+
+                        self.add(Arc::new(Sphere::new_moving(
+                            center,
+                            center2,
+                            0.2,
+                            sphere_material,
+                        )));
                     } else if choose_mat < 0.95 {
                         // metal
                         let aldebo = Color::random_with_bounds(0.5, 1.0);
