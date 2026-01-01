@@ -128,12 +128,10 @@ impl Camera {
     fn get_ray(&self, s: f64, t: f64) -> Ray {
         let rd = self.lens_radius * random_in_unit_disk();
         let offset = self.u * rd.x() + self.v * rd.y();
-        return Ray {
-            orig: self.center + offset,
-            dir: self.lower_left_corner + s * self.horizontal + t * self.vertical
-                - self.center
-                - offset,
-        };
+        return Ray::new(
+            self.center + offset,
+            self.lower_left_corner + s * self.horizontal + t * self.vertical - self.center - offset,
+        );
     }
 }
 
@@ -173,7 +171,7 @@ fn ray_color(ray: &Ray, depth: i32, world: &HittableList) -> Vec3 {
         // old end
     }
 
-    let unit_direction = ray.dir.unit_vector();
+    let unit_direction = ray.dir().unit_vector();
     let a = 0.5 * (unit_direction.y() + 1.0);
     Color(1.0, 1.0, 1.0) * (1.0 - a) + Color(0.5, 0.7, 1.0) * a
 }

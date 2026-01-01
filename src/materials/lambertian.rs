@@ -28,9 +28,7 @@ impl Material for Lambertian {
         if scatter_direction.near_zero() {
             scatter_direction = hit_record.normal;
         }
-
-        scattered.orig = hit_record.p;
-        scattered.dir = scatter_direction;
+        *scattered = Ray::new(hit_record.p, scatter_direction);
         attenuation.clone_from(&self.albedo);
         return true;
     }

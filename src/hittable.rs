@@ -23,7 +23,7 @@ impl HitRecord {
         // print!("if front face {}\n",self.front_face);
         self.normal = match self.front_face {
             true => *outward_normal,
-            false => -*outward_normal,
+            false => -(*outward_normal),
         }
     }
     pub fn new() -> HitRecord {

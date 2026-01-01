@@ -40,7 +40,7 @@ impl Material for Dielectric {
             false => self.ir,
         };
 
-        let unit_dir = r_in.dir.unit_vector();
+        let unit_dir = r_in.dir().unit_vector();
         let cos_theta = (-unit_dir).dot(&hit_record.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
@@ -51,9 +51,7 @@ impl Material for Dielectric {
             true => unit_dir.reflect(&hit_record.normal),
             false => Vec3::refract(&unit_dir, &hit_record.normal, refraction_ratio),
         };
-
-        scattered.orig = hit_record.p;
-        scattered.dir = direction;
+        *scattered = Ray::new(hit_record.p, direction);
         return true;
     }
 }

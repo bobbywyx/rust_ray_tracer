@@ -38,12 +38,14 @@ impl Material for Metal {
         attenuation: &mut Vec3,
         scattered: &mut Ray,
     ) -> bool {
-        let reflected = r_in.dir.unit_vector().reflect(&hit_record.normal);
+        let reflected = r_in.dir().unit_vector().reflect(&hit_record.normal);
 
-        scattered.orig = hit_record.p;
-        scattered.dir = reflected + self.fuzz * Vec3::random_in_unit_sphere();
+        *scattered = Ray::new(
+            hit_record.p,
+            reflected + self.fuzz * Vec3::random_in_unit_sphere(),
+        );
 
         attenuation.clone_from(&self.albedo);
-        return scattered.dir.dot(&hit_record.normal) > 0.0;
+        return scattered.dir().dot(&hit_record.normal) > 0.0;
     }
 }
